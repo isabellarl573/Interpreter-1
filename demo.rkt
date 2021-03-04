@@ -11,7 +11,7 @@
 (define evaluate-tree
   (lambda (tree)
     (cond
-      (evaluate-line (first-line tree) tree '()))))
+      (evaluate-line (first-line tree) (cdr tree) '()))))
 
 ;gets the first line of the tree
 (define first-line car)
@@ -22,10 +22,10 @@
   (lambda (line tree state)
     (cond
       ((null?) state)
-      ((eq? (line-type line) 'var) (evaluate-line (next-line tree) (declaration (name line) line state)))
-      ((eq? (line-type line) '=) (evaluate-line (next-line tree) (assignment (name line) (expression line) state)))
-      ((eq? (line-type line) 'if) (evaluate-line (next-line tree) (if-statement (condition line) (then-statement line) (else-statement line) state)))
-      ((eq? (line-type line) 'while) (evaluate-line (next-line tree) (while-statement (condition line) (then-statement line) state)))
+      ((eq? (line-type line) 'var) (evaluate-line (next-line tree) (cdr tree) (declaration (name line) line state)))
+      ((eq? (line-type line) '=) (evaluate-line (next-line tree) (cdr tree) (assignment (name line) (expression line) state)))
+      ((eq? (line-type line) 'if) (evaluate-line (next-line tree) (cdr tree) (if-statement (condition line) (then-statement line) (else-statement line) state)))
+      ((eq? (line-type line) 'while) (evaluate-line (next-line tree) (cdr tree) (while-statement (condition line) (then-statement line) state)))
       ((eq? (line-type line) 'return) (return (return-expression line))))))
 
 ;gets the variable name in a declaration/assignment statement
@@ -41,7 +41,7 @@
 ;gets the return expression in a return statement
 (define return-expression cadr)
 ;gets the type of the line, the first element in the line
-(define line-type caar)
+(define line-type car)
 ;gets the next line in the tree
 (define next-line cdr)
 
@@ -77,7 +77,7 @@
 ;if value a non number/not a boolean, its undeclared
 (define declaration
   (lambda (name line state)
-    (if (null? (expression line))
+    (if (null? (cddr line))
         (Add_M_state name null (M_state expression state))
         (Add_M_state name (M_value expression state) (M_state expression state)))))
 
@@ -120,4 +120,5 @@
     (if (M_boolean condition (M_state condition state))
         (while-statement condition body-statement (M_state body-statement (M_state condition state)))
         state)))
+
 
