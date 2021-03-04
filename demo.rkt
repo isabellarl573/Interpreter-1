@@ -11,17 +11,18 @@
 (define evaluate-tree
   (lambda (tree)
     (cond
-      (evaluate-line (first-line tree) (cdr tree) '()))))
+      (evaluate-line (first-line tree) tree '()))))
 
 ;gets the first line of the tree
 (define first-line car)
 
-;would not work with return in if/while statements
+;if the state is a number, this means there was a return statement inside an if/while statement
 ;evaluated each line of the tree
 (define evaluate-line
   (lambda (line tree state)
     (cond
-      ((null?) state)
+      ((null? tree) state) ;maybe skips last line, not sure tho
+      ((number? state) state)
       ((eq? (line-type line) 'var) (evaluate-line (next-line tree) (cdr tree) (declaration (name line) line state)))
       ((eq? (line-type line) '=) (evaluate-line (next-line tree) (cdr tree) (assignment (name line) (expression line) state)))
       ((eq? (line-type line) 'if) (evaluate-line (next-line tree) (cdr tree) (if-statement (condition line) (then-statement line) (else-statement line) state)))
@@ -43,20 +44,20 @@
 ;gets the type of the line, the first element in the line
 (define line-type car)
 ;gets the next line in the tree
-(define next-line cdr)
+(define next-line cdar)
 
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
 (define Add_M_state
   (lambda (name value state)
     (cons (cons name (car state)) (cons (cons value (car (cdr state))) '()))))
 
-;does not work -> maybe switch to other state?
-(define Remove_M_state
-  (lambda (name declare-list value-list)
-    (cond
-      ((null? declare-list) '())
-      ((eq? (car declare-list) name) (cons (cdr declare-list) (cons (cdr value-list) '())))
-      (else (Remove_M_state name (cons (car declare-list) (cdr declare-list)) (cons (car value-list) (cdr value-list)))))))
+;does not work 
+;(define Remove_M_state
+  ;(lambda (name declare-list value-list)
+   ;(cond
+      ;((null? declare-list) '())
+      ;((eq? (car declare-list) name) (cons (cdr declare-list) (cons (cdr value-list) '())))
+      ;(else (Remove_M_state name (cons (car declare-list) (cdr declare-list)) (cons (car value-list) (cdr value-list)))))))
 
 ;placeholder
 ;returns state
@@ -120,5 +121,3 @@
     (if (M_boolean condition (M_state condition state))
         (while-statement condition body-statement (M_state body-statement (M_state condition state)))
         state)))
-
-
