@@ -75,15 +75,15 @@
 (define M_boolean
   (lambda (expression state)
     (cond
-      ((eq? (car expression) '&&) (and (M_boolean (cdar expression)) (M_boolean (cddar expression))))
-      ((eq? (car expression) '||) (or (M_boolean (cdar expression)) (M_boolean (cddar expression))))
-      ((eq? (car expression) '!) (not (M_boolean (cdar expression))))
-      ((eq? (car expression) '==) (= (M_value (cdar expression)) (M_value (cddar expression))))
-      ((eq? (car expression) '!=) (not (= (M_value (cdar expression)) (M_value (cddar expression)))))
-      ((eq? (car expression) '<) (< (M_value (cdar expression)) (M_value (cddar expression))))
-      ((eq? (car expression) '<=) (<= (M_value (cdar expression)) (M_value (cddar expression))))
-      ((eq? (car expression) '>) (> (M_value (cdar expression)) (M_value (cddar expression))))
-      ((eq? (car expression) '>=) (>= (M_value (cdar expression)) (M_value (cddar expression))))
+      ((eq? (car expression) '&&) (and (M_boolean (cadr expression)) (M_boolean (cddr expression))))
+      ((eq? (car expression) '||) (or (M_boolean (cadr expression)) (M_boolean (cddr expression))))
+      ((eq? (car expression) '!) (not (M_boolean (cadr expression))))
+      ((eq? (car expression) '==) (= (M_value (cadr expression)) (M_value (cddr expression))))
+      ((eq? (car expression) '!=) (not (= (M_value (cadr expression)) (M_value (cddr expression)))))
+      ((eq? (car expression) '<) (< (M_value (cadr expression)) (M_value (cddr expression))))
+      ((eq? (car expression) '<=) (<= (M_value (cadr expression)) (M_value (cddr expression))))
+      ((eq? (car expression) '>) (> (M_value (cadr expression)) (M_value (cddr expression))))
+      ((eq? (car expression) '>=) (>= (M_value (cadr expression)) (M_value (cddr expression))))
       (else (error "Invalid")))))
     
 (define M_value
