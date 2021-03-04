@@ -72,8 +72,43 @@
 
 
 ;placeholder
-(define M_boolean cdr)
-(define M_value cdr)
+(define M_boolean
+  (lambda (expression state)
+    (cond
+      ((eq? (car expression) '&&) (and (M_boolean (cdar expression)) (M_boolean (cddar expression))))
+      ((eq? (car expression) '||) (or (M_boolean (cdar expression)) (M_boolean (cddar expression))))
+      ((eq? (car expression) '!) (not (M_boolean (cdar expression))))
+      ((eq? (car expression) '==) (= (M_value (cdar expression)) (M_value (cddar expression))))
+      ((eq? (car expression) '!=) (not (= (M_value (cdar expression)) (M_value (cddar expression)))))
+      ((eq? (car expression) '<) (< (M_value (cdar expression)) (M_value (cddar expression))))
+      ((eq? (car expression) '<=) (<= (M_value (cdar expression)) (M_value (cddar expression))))
+      ((eq? (car expression) '>) (> (M_value (cdar expression)) (M_value (cddar expression))))
+      ((eq? (car expression) '>=) (>= (M_value (cdar expression)) (M_value (cddar expression))))
+      (else (error "Invalid")))))
+    
+(define M_value
+  (lambda (expression state)
+    (cond
+      ((number? expression) expression)
+      ((eq? (operator expression) '+) (+ (M_value (car (cdr expression))) (M_value (car (cdr (cdr expression))))))
+      ((eq? (operator expression) '/) (quotient (M_value (car (cdr expression))) (M_value (car(M_value (* '(+ 4 3) '(- 2 1))) (cdr (cdr expression))))))
+      ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '-) (- (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '*) (* (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      (else (get_from_state expression (car state) (cdar state)))))) ;not sure if this is the best way to get variable values
+
+(define operator (lambda (expression) (car expression)))
+(define leftoperand cadr) 
+(define rightoperand caddr)
+
+(define get_from_state
+  (lambda (name declare-list value-list)
+    (cond
+      ((null? declare-list) (error "Not declared"))
+      ((and (eq? name (car declare-list)) (not (eq? (car value-list) 'null))) (car value-list))
+      (else (get_from_state name (cdr declare-list) (cdr value-list))))))
+      
+
 
 ;if value a non number/not a boolean, its undeclared
 (define declaration
