@@ -93,11 +93,11 @@
       ((number? expression) expression)
       ((eq? (car expression) 'true) #t)
       ((eq? (car expression) 'false) #f)
-      ((eq? (operator expression) '+) (+ (M_value (car (cdr expression))) (M_value (car (cdr (cdr expression))))))
-      ((eq? (operator expression) '/) (quotient (M_value (car (cdr expression))) (M_value (car(M_value (* '(+ 4 3) '(- 2 1))) (cdr (cdr expression))))))
-      ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression)) (M_value (rightoperand expression))))
-      ((eq? (operator expression) '-) (- (M_value (leftoperand expression)) (M_value (rightoperand expression))))
-      ((eq? (operator expression) '*) (* (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '+) (+ (M_value (car (cdr expression)) state) (M_value (rightoperand expression) state)))
+      ((eq? (operator expression) '/) (quotient (M_value (car (cdr expression)) state) (M_value (rightoperand expression) state)))
+      ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
+      ((eq? (operator expression) '-) (- (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
+      ((eq? (operator expression) '*) (* (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       (else (get_from_state expression (car state) (cdar state)))))) ;not sure if this is the best way to get variable values
 
 (define operator (lambda (expression) (car expression)))
