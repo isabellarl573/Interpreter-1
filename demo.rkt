@@ -121,7 +121,7 @@
   (lambda (name line state)
     (if (null? (cddr line))
         (Add_M_state name 'null state)
-        (Add_M_state name (M_value expression state) (M_state expression state)))))
+        (Add_M_state name (M_value (caddr line) state) (M_state (caddr line) state)))))
 
 (define assignment
   (lambda (name expression state)
