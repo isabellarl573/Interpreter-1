@@ -71,14 +71,17 @@
 
 ;placeholder
 ;returns state
+
 (define M_state
   (lambda (expression state)
     (cond
       ((null? expression) state)
+      ((not (list? expression)) state)
       ((list? (car expression)) (M_state (cdr expression) (M_state (car expression) state)))
       ((eq? (car expression) 'var) (declaration (name expression) expression state))
-      ((eq? (car expression) '=) (assignment (name expression) (expression expression) state))
+      ((eq? (car expression) '=) (assignment (name expression) (caddr expression) state))
       (else state))))
+     
 
 
 ;tested
