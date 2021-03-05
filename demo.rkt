@@ -71,6 +71,7 @@
       (else state))))
 
 
+;tested
 (define M_boolean
   (lambda (expression state)
     (cond
@@ -86,7 +87,7 @@
       ((eq? (operator expression) '>=) (>= (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       (else (error "Invalid")))))
       
-    
+;tested
 (define M_value
   (lambda (expression state)
     (cond
@@ -105,6 +106,7 @@
 (define leftoperand cadr) 
 (define rightoperand caddr)
 
+;tested
 (define get_from_state
   (lambda (name declare-list value-list)
     (cond
@@ -118,7 +120,7 @@
 (define declaration
   (lambda (name line state)
     (if (null? (cddr line))
-        (Add_M_state name null (M_state expression state))
+        (Add_M_state name 'null state)
         (Add_M_state name (M_value expression state) (M_state expression state)))))
 
 (define assignment
