@@ -71,19 +71,18 @@
       (else state))))
 
 
-;placeholder
 (define M_boolean
   (lambda (expression state)
     (cond
-      ((eq? (car expression) '&&) (and (M_boolean (cadr expression)) (M_boolean (caddr expression))))
-      ((eq? (car expression) '||) (or (M_boolean (cadr expression)) (M_boolean (caddr expression))))
-      ((eq? (car expression) '!) (not (M_boolean (cadr expression))))
-      ((eq? (car expression) '==) (= (M_value (cadr expression) state) (M_value (caddr expression) state)))
-      ((eq? (car expression) '!=) (not (= (M_value (cadr expression) state) (M_value (caddr expression) state))))
-      ((eq? (car expression) '<) (< (M_value (cadr expression) state) (M_value (caddr expression) state)))
-      ((eq? (car expression) '<=) (<= (M_value (cadr expression) state) (M_value (caddr expression) state)))
-      ((eq? (car expression) '>) (> (M_value (cadr expression) state) (M_value (caddr expression) state)))
-      ((eq? (car expression) '>=) (>= (M_value (cadr expression) state) (M_value (caddr expression) state)))
+      ((eq? (operator expression) '&&) (and (M_boolean (leftoperand expression)) (M_boolean (rightoperand expression))))
+      ((eq? (operator expression) '||) (or (M_boolean (leftoperand expression)) (M_boolean (rightoperand expression))))
+      ((eq? (operator expression) '!) (not (M_boolean (leftoperand expression))))
+      ((eq? (operator expression) '==) (= (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '!=) (not (= (M_value (leftoperand expression)) (rightoperand (caddr expression)))))
+      ((eq? (operator expression) '<) (< (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '<=) (<= (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '>) (> (M_value (leftoperand expression)) (M_value (rightoperand expression))))
+      ((eq? (operator expression) '>=) (>= (M_value (leftoperand expression)) (M_value (rightoperand expression))))
       (else (error "Invalid")))))
       
     
@@ -91,16 +90,17 @@
   (lambda (expression state)
     (cond
       ((number? expression) expression)
-      ((eq? (car expression) 'true) #t)
-      ((eq? (car expression) 'false) #f)
-      ((eq? (operator expression) '+) (+ (M_value (car (cdr expression)) state) (M_value (rightoperand expression) state)))
-      ((eq? (operator expression) '/) (quotient (M_value (car (cdr expression)) state) (M_value (rightoperand expression) state)))
+      ((eq? expression 'true) #t)
+      ((eq? expression 'false) #f)
+      ((not (pair? expression)) (get_from_state expression (car state) (cadr state)))
+      ((eq? (operator expression) '+) (+ (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
+      ((eq? (operator expression) '/) (quotient (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '-) (- (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '*) (* (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
-      (else (get_from_state expression (car state) (cdar state)))))) ;not sure if this is the best way to get variable values
+      (else (error "Invalid"))))) ;not sure if this is the best way to get variable values
 
-(define operator (lambda (expression) (car expression)))
+(define operator car)
 (define leftoperand cadr) 
 (define rightoperand caddr)
 
