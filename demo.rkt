@@ -49,7 +49,7 @@
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
 (define Add_M_state
   (lambda (name value state)
-    (cons (cons name (car state)) (cons (cons value (car (cdr state))) '()))))
+    (list (cons name (car state)) (cons value (car (cdr state))))))
 
 (define Remove_M_state
   (lambda (name declare-list value-list)
