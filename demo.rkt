@@ -59,6 +59,13 @@
       ;((eq? (car declare-list) name) (cons (cdr declare-list) (cons (cdr value-list) '())))
       ;(else (Remove_M_state name (cons (car declare-list) (cdr declare-list)) (cons (car value-list) (cdr value-list)))))))
 
+(define Remove_M_state* ;have to pass '(() ()) into savedlist, savelist holds the part of the state that is not equal to the name
+  (lambda (name savedlist state)
+    (cond
+      ((null? (car state)) state) ; if the list of names in state is empty (dont know if it should just check if state is null
+      ((eq? name (car (car state))) cons (cons (car savedlist) (cdr (car state))) (cons (cdr savedlist) (cdr (cdr state)))) ;checks if the name is eqaual to the car and if it does it skips it by consing the saved list and cdr of state
+      ((Remove_M_state* name cons (cons (car savedlist) (car (car state))) (cons (cdr savedlist) (car (cdr state))) state))))) ;if not equal run recursion but add the state part into savedlist
+
 ;placeholder
 ;returns state
 (define M_state
