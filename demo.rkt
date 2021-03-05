@@ -166,10 +166,11 @@
     (M_value expression (M_state expression state))))
 
 (define if-statement
-  (lambda (condition then-statement else-statement state)
-    (if (M_boolean condition (M_state condition state))
-        (M_state then-statement (M_state condition state))
-        (M_state else-statement (M_state condition state)))))
+  (lambda (condition then-statement line state)
+    (cond
+      ((M_boolean condition (M_state condition state)) (M_state then-statement (M_state condition state)))
+      ((null? (cdddr line)) state)
+      (else (M_state (cadddr line) (M_state condition state))))))
 
 (define while-statement
   (lambda (condition body-statement state)
