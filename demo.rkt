@@ -90,6 +90,8 @@
   (lambda (expression state)
     (cond
       ((number? expression) expression)
+      ((eq? (car expression) 'true) #t)
+      ((eq? (car expression) 'false) #f)
       ((eq? (operator expression) '+) (+ (M_value (car (cdr expression))) (M_value (car (cdr (cdr expression))))))
       ((eq? (operator expression) '/) (quotient (M_value (car (cdr expression))) (M_value (car(M_value (* '(+ 4 3) '(- 2 1))) (cdr (cdr expression))))))
       ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression)) (M_value (rightoperand expression))))
