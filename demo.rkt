@@ -66,8 +66,8 @@
     (cond
       ((null? expression) state)
       ((list? (car expression)) (M_state (cdr expression) (M_state (car expression) state)))
-      ((eq? (car expression) 'var) (declaration (name (car expression)) (car expression)))
-      ((eq? (car expression) '=) (assignment (name (car expression)) (expression (car expression)) state))
+      ((eq? (car expression) 'var) (declaration (name expression) expression state))
+      ((eq? (car expression) '=) (assignment (name expression) (expression expression) state))
       (else state))))
 
 
@@ -115,7 +115,7 @@
       (else (get_from_state name (cdr declare-list) (cdr value-list))))))
       
 
-
+;tested, but not when there is a nested declaration/assignment
 ;if value a non number/not a boolean, its undeclared
 (define declaration
   (lambda (name line state)
@@ -123,10 +123,11 @@
         (Add_M_state name 'null state)
         (Add_M_state name (M_value (caddr line) state) (M_state (caddr line) state)))))
 
+;tested, but does not remove the declared variable and value
 (define assignment
   (lambda (name expression state)
     (if (is_declared name (car state)) ;if has been declared
-        (M_state name (M_value expression state) (M_state expression state))
+        (Add_M_state name (M_value expression state) (M_state expression state))
         (error "Not Declared"))))
 
 ;checks if the variable name has been declared before assignment
@@ -149,7 +150,7 @@
 
 (define return
   (lambda (expression state)
-    (M_value expression state)))
+    (M_value expression (M_state expression state))))
 
 (define if-statement
   (lambda (condition then-statement else-statement state)
