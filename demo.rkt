@@ -109,6 +109,7 @@
       ((eq? (operator expression) '+) (+ (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '/) (quotient (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '%) (remainder (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
+      ((and (eq? (operator expression) '-) (null? (cddr expression))) (- (M_value (leftoperand expression) state))) 
       ((eq? (operator expression) '-) (- (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) '*) (* (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) 'var) (M_value (leftoperand expression) (M_state expression state)))
