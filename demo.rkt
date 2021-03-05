@@ -78,12 +78,12 @@
       ((eq? (car expression) '&&) (and (M_boolean (cadr expression)) (M_boolean (caddr expression))))
       ((eq? (car expression) '||) (or (M_boolean (cadr expression)) (M_boolean (caddr expression))))
       ((eq? (car expression) '!) (not (M_boolean (cadr expression))))
-      ((eq? (car expression) '==) (= (M_value (cadr expression)) (M_value (caddr expression))))
-      ((eq? (car expression) '!=) (not (= (M_value (cadr expression)) (M_value (caddr expression)))))
-      ((eq? (car expression) '<) (< (M_value (cadr expression)) (M_value (caddr expression))))
-      ((eq? (car expression) '<=) (<= (M_value (cadr expression)) (M_value (caddr expression))))
-      ((eq? (car expression) '>) (> (M_value (cadr expression)) (M_value (caddr expression))))
-      ((eq? (car expression) '>=) (>= (M_value (cadr expression)) (M_value (caddr expression))))
+      ((eq? (car expression) '==) (= (M_value (cadr expression) state) (M_value (caddr expression) state)))
+      ((eq? (car expression) '!=) (not (= (M_value (cadr expression) state) (M_value (caddr expression) state))))
+      ((eq? (car expression) '<) (< (M_value (cadr expression) state) (M_value (caddr expression) state)))
+      ((eq? (car expression) '<=) (<= (M_value (cadr expression) state) (M_value (caddr expression) state)))
+      ((eq? (car expression) '>) (> (M_value (cadr expression) state) (M_value (caddr expression) state)))
+      ((eq? (car expression) '>=) (>= (M_value (cadr expression) state) (M_value (caddr expression) state)))
       (else (error "Invalid")))))
       
     
