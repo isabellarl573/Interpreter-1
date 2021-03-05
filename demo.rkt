@@ -64,7 +64,7 @@
     (cond
       ((null? (car state)) state) ; if the list of names in state is empty (dont know if it should just check if state is null
       ((eq? name (car (car state))) cons (cons (car savedlist) (cdr (car state))) (cons (cdr savedlist) (cdr (cdr state)))) ;checks if the name is eqaual to the car and if it does it skips it by consing the saved list and cdr of state
-      ((Remove_M_state* name cons (cons (car savedlist) (car (car state))) (cons (cdr savedlist) (car (cdr state))) state))))) ;if not equal run recursion but add the state part into savedlist
+      (else (Remove_M_state* name cons (cons (car savedlist) (car (car state))) (cons (cdr savedlist) (car (cdr state))) state))))) ;if not equal run recursion but add the state part into savedlist
 
 ;placeholder
 ;returns state
