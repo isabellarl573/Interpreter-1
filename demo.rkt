@@ -74,7 +74,7 @@
 (define M_boolean
   (lambda (expression state)
     (cond
-      ((not (list? expression)) expression)
+      ((not (list? expression)) (M_value expression state))
       ((eq? (operator expression) '&&) (and (M_boolean (leftoperand expression) state) (M_boolean (rightoperand expression) state)))
       ((eq? (operator expression) '||) (or (M_boolean (leftoperand expression) state) (M_boolean (rightoperand expression) state)))
       ((eq? (operator expression) '!) (not (M_boolean (leftoperand expression) state)))
