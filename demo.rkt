@@ -28,11 +28,12 @@
     (cond
       ;((null? tree) state) ;maybe skips last line, not sure tho
       ((number? state) state)
-      ((eq? (line-type line) 'var) (evaluate-line (next-line tree) (cdr tree) (declaration (name line) line state)))
-      ((eq? (line-type line) '=) (evaluate-line (next-line tree) (cdr tree) (assignment (name line) (expression line) state)))
-      ((eq? (line-type line) 'if) (evaluate-line (next-line tree) (cdr tree) (if-statement (condition line) (then-statement line) line state)))
-      ((eq? (line-type line) 'while) (evaluate-line (next-line tree) (cdr tree) (while-statement (condition line) (then-statement line) state)))
-      ((eq? (line-type line) 'return) (return (return-expression line) state)))))
+      (else (evaluate-line (next-line tree) (cdr tree) (M_state line state))))))
+      ;((eq? (line-type line) 'var) (evaluate-line (next-line tree) (cdr tree) (declaration (name line) line state)))
+      ;((eq? (line-type line) '=) (evaluate-line (next-line tree) (cdr tree) (assignment (name line) (expression line) state)))
+      ;((eq? (line-type line) 'if) (evaluate-line (next-line tree) (cdr tree) (if-statement (condition line) (then-statement line) line state)))
+      ;((eq? (line-type line) 'while) (evaluate-line (next-line tree) (cdr tree) (while-statement (condition line) (then-statement line) state)))
+      ;((eq? (line-type line) 'return) (return (return-expression line) state)))))
 
 ;gets the variable name in a declaration/assignment statement
 (define name cadr)
@@ -77,7 +78,7 @@
       ((eq? (car expression) 'var) (declaration (name expression) expression state))
       ((eq? (car expression) '=) (assignment (name expression) (caddr expression) state))
       ((eq? (car expression) 'if) (if-statement (cadr expression) (caddr expression) expression state))
-      ((eq? (car expression) 'while) (while-statement (cadr expression) (caddr expression) (caddr expression) state))
+      ((eq? (car expression) 'while) (while-statement (cadr expression) (caddr expression) state))
       (else state))))
 
 
