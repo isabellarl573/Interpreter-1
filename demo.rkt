@@ -51,13 +51,16 @@
   (lambda (name value state)
     (cons (cons name (car state)) (cons (cons value (car (cdr state))) '()))))
 
-;does not work 
-;(define Remove_M_state
-  ;(lambda (name declare-list value-list)
-   ;(cond
-      ;((null? declare-list) '())
-      ;((eq? (car declare-list) name) (cons (cdr declare-list) (cons (cdr value-list) '())))
-      ;(else (Remove_M_state name (cons (car declare-list) (cdr declare-list)) (cons (car value-list) (cdr value-list)))))))
+(define Remove_M_state
+  (lambda (name declare-list value-list)
+    (remove name declare-list value-list '() '())))
+
+(define remove
+  (lambda (name declare-list value-list saved-declare saved-value)
+    (cond
+      ((null? declare-list) (list saved-declare saved-value))
+      ((eq? name (car declare-list)) (list (append saved-declare (cdr declare-list)) (append saved-value (cdr value-list))))
+      (else (remove name (cdr declare-list) (cdr value-list) (cons (car declare-list) saved-declare) (cons (car value-list) saved-value))))))
 
 (define Remove_M_state* ;have to pass '(() ()) into savedlist, savelist holds the part of the state that is not equal to the name
   (lambda (name savedlist state)
