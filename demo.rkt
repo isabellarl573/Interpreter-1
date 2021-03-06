@@ -125,7 +125,8 @@
   (lambda (name declare-list value-list)
     (cond
       ((null? declare-list) (error "Not declared"))
-      ((and (eq? name (car declare-list)) (not (eq? (car value-list) 'null))) (car value-list))
+      ((and (eq? name (car declare-list)) (eq? (car value-list) 'null)) (error "Not Assigned"))
+      ((and (eq? name (car declare-list))) (car value-list))
       (else (get_from_state name (cdr declare-list) (cdr value-list))))))
       
 
