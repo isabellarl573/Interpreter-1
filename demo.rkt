@@ -1,4 +1,4 @@
-#GROUP 16: Abdasalaam Salem, Isabella Robert Llorens, Jamie Booker
+;GROUP 16: Abdasalaam Salem, Isabella Robert Llorens, Jamie Booker
 #lang racket
 (require "simpleParser.rkt")
 
