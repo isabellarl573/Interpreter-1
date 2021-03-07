@@ -99,7 +99,7 @@
       ((eq? (operator expression) '>=) (>= (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       (else (error "Invalid")))))
       
-;tested
+;returns the value of expression, whether it is a boolean, variable, arithmetic expression, or number
 (define M_value
   (lambda (expression state)
     (cond
@@ -115,74 +115,78 @@
       ((eq? (operator expression) '*) (* (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) 'var) (M_value (leftoperand expression) (M_state expression state)))
       ((eq? (operator expression) '=) (M_value (leftoperand expression) (M_state expression state)))
-      (else (M_boolean expression state))))) 
-
+      (else (M_boolean expression state))))) ;if the value of expression is either a boolean test (like >) or if the expression is invalid
+      
+;helper function for finding the operator of an expression
 (define operator car)
+
+;helper function for finding the left operand of an expression
 (define leftoperand cadr) 
+
+;helper function for finding the right operand of an expression
 (define rightoperand caddr)
 
-;tested
+;reads through the declared/value list bindings and returns the value of the variable if found in declare-list and if it is assigned
 (define get_from_state
   (lambda (name declare-list value-list)
     (cond
       ((null? declare-list) (error "Not declared"))
-      ((and (eq? name (car declare-list)) (eq? (car value-list) 'null)) (error "Not Assigned"))
-      ((and (eq? name (car declare-list))) (car value-list))
+      ((and (eq? name (car declare-list)) (eq? (car value-list) 'null)) (error "Not Assigned")) ;if the binding for variable name is null it is not assigned
+      ((and (eq? name (car declare-list))) (car value-list))                                    ;returns value of name if it has been found
       (else (get_from_state name (cdr declare-list) (cdr value-list))))))
       
-
-;tested, but not when there is a nested declaration/assignment
-;if value a non number/not a boolean, its undeclared
+;if value of name is a non number/not a boolean, its undeclared
+;line - the entire declaration expression
 (define declaration
   (lambda (name line state)
     (if (null? (cddr line))
-        (Add_M_state name 'null state)
-        (Add_M_state name (M_value (caddr line) state) (M_state (caddr line) state)))))
+        (Add_M_state name 'null state) ;if variable name is declared without a value
+        (Add_M_state name (M_value (caddr line) state) (M_state (caddr line) state))))) ;if name is declared with a value
 
-;tested, but does not remove the declared variable and value
+;assigns variable name to value expression by first removing the variable and its old value from the state and adding it back in with the new value
 (define assignment
   (lambda (name expression state)
-    (if (is_declared name (car state)) ;if has been declared
-        (Add_M_state name (M_value expression state) (Remove_M_state name (M_state expression state)))
+    (if (is_declared name (car state)) ;if name has been declared
+        (Add_M_state name (M_value expression state) (Remove_M_state name (M_state expression state))) ;adds the name with the new value to the state with name removed
         (error "Not Declared"))))
 
-;tested
 ;checks if the variable name has been declared before assignment
 ;gets the declare-list from the state (first sub list)
 (define is_declared
   (lambda (name declare-list)
     (cond
       ((null? declare-list) #f)
-      ((eq? name (car declare-list)) #t)
+      ((eq? name (car declare-list)) #t) ;if it finds the variable name in the declared list of variables, it is declared
       (else (is_declared name (cdr declare-list))))))
 
-;tested
 ;determines if the variable has been assigned
 ;gets the declare-list from the state (first sub list) and the value-list from the state (second sublist)
+;declare-list contains the variable names and value-list is their corresponding values
 (define is_assigned
   (lambda (name declare-list value-list)
     (cond
       ((null? declare-list) error "Not Declared")
-      ((eq? (car declare-list) name) (not (eq? (car value-list) 'null)))
+      ((eq? (car declare-list) name) (not (eq? (car value-list) 'null))) ;if the name is found in the declare-list and the value is not null, return true
       (else (is_assigned name (cdr declare-list) (cdr value-list))))))
 
-;tested
+;returns the value of expression using the state and M_value function
 (define return
   (lambda (expression state)
     (M_value expression (M_state expression state))))
 
-;tested
+;if condition is true, perform then-statement on the state
+;line - entire if-then expression
 (define if-statement
   (lambda (condition then-statement line state)
     (cond
-      ((M_boolean condition (M_state condition state)) (M_state then-statement (M_state condition state)))
+      ((M_boolean condition (M_state condition state)) (M_state then-statement (M_state condition state))) ;if condition is true by M_boolean, perform then-statement with M_state
       ((null? (cdddr line)) (M_state condition state))
       (else (M_state (cadddr line) (M_state condition state))))))
 
-;
+;while condition is true, perform body statement on the state
 (define while-statement
   (lambda (condition body-statement state)
     (if (M_boolean condition (M_state condition state))
-        (while-statement condition body-statement (M_state body-statement (M_state condition state)))
+        (while-statement condition body-statement (M_state body-statement (M_state condition state))) ;if condtion is true, run while statement again on the changed state
         (M_state condition state))))
 
