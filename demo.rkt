@@ -2,22 +2,13 @@
 #lang racket
 (require "simpleParser.rkt")
 
-;first draft - IRL
-
-;(evaluate-tree '((var x) (= x (+ 3 4)) (return x)))
-
-;(evaluate-tree '((var x) (= x 10) (var y (+ (* 3 x) 5)) (while (!= (% y x) 3) (= y (+ y 1)))))
-
-;((var x) (= x 10) (var y (+ (* 3 x) 5)) (while (!= (% y x) 3) (= y (+ y 1))) (if (> x y) (return x) (if (> (* x x) y) (return (* x x)) (if (> (* x (+ x x)) y) (return (* x (+ x x))) (return (- y 1))))))
-
 ;takes a filename that contains the code that is to be sent to the parser
 (define interpret
   (lambda (filename)
     (evaluate-tree (parser filename))))
 
+;evaluates the tree from interpret by calling evaluate-line
 ;a last car is added to the tree in case the last line is a while/if with a return statement inside
-
-;evaluates the tree by calling evaluate-line
 (define evaluate-tree
   (lambda (tree)
      (evaluate-line (car tree) (append (cdr tree) '((null))) '(() ()))))
@@ -25,8 +16,8 @@
 ;gets the first line of the tree
 (define first-line car)
 
+;evaluates each line of the tree
 ;if the state is a number, this means there was a return statement inside an if/while statement
-;evaluated each line of the tree
 (define evaluate-line
   (lambda (line tree state)
     (cond
@@ -36,19 +27,25 @@
       ((number? state) state)
       (else (evaluate-line (next-line tree) (cdr tree) (M_state line state))))))
 
-;gets the variable name in a declaration/assignment statement
+;name gets the variable name in a declaration/assignment statement
 (define name cadr)
-;gets the expression in the assignment statement
+
+;expression gets the expression in the assignment statement
 (define expression caddr)
-;gets the condition in a if or while statement
+
+;condition gets the condition in a if or while statement
 (define condition cadr)
-;gets the then statement in a if or while statement
+
+;then-statement gets the then statement in a if or while statement
 (define then-statement caddr)
-;gets the return expression in a return statement
+
+;return-expression gets the return expression in a return statement
 (define return-expression cadr)
-;gets the type of the line, the first element in the line
+
+;line-type gets the type of the line, the first element in the line
 (define line-type car)
-;gets the next line in the tree
+
+;next-line gets the next line in the tree
 (define next-line car)
 
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
@@ -56,10 +53,12 @@
   (lambda (name value state)
     (list (cons name (car state)) (cons value (cadr state)))))
 
+;removes a variable and its corresponding value from the state by calling the remove function
 (define Remove_M_state
   (lambda (name state)
     (remove name (car state) (cadr state) '() '())))
 
+;helper function to remove a variable from state list, if variable isn't found then the original state is returned from a saved list
 (define remove
   (lambda (name declare-list value-list saved-declare saved-value)
     (cond
@@ -68,7 +67,7 @@
       (else (remove name (cdr declare-list) (cdr value-list) (cons (car declare-list) saved-declare) (cons (car value-list) saved-value))))))
 
 
-;returns state
+;reterns the state of an expression by calling on its respective function, otherwise the current state will be returned
 (define M_state
   (lambda (expression state)
     (cond
@@ -83,7 +82,8 @@
       (else state))))
 
 
-;tested
+;returns the boolean result of boolean and comparison operations 
+;each operand will be sent to M_value for interpretation 
 (define M_boolean
   (lambda (expression state)
     (cond
