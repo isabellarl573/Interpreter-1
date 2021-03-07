@@ -140,7 +140,7 @@
 (define declaration
   (lambda (name line state)
     (if (null? (cddr line))
-        (Add_M_state name 'null state) ;if variable name is declared without a value
+        (Add_M_state name 'null state)                                                  ;if variable name is declared without a value
         (Add_M_state name (M_value (caddr line) state) (M_state (caddr line) state))))) ;if name is declared with a value
 
 ;assigns variable name to value expression by first removing the variable and its old value from the state and adding it back in with the new value
