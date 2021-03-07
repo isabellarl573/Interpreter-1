@@ -179,7 +179,7 @@
       ((null? (cdddr line)) (M_state condition state))
       (else (M_state (cadddr line) (M_state condition state))))))
 
-;tested?
+;
 (define while-statement
   (lambda (condition body-statement state)
     (if (M_boolean condition (M_state condition state))
