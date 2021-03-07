@@ -13,9 +13,6 @@
   (lambda (tree)
      (evaluate-line (car tree) (append (cdr tree) '((null))) '(() ()))))
 
-;gets the first line of the tree
-(define first-line car)
-
 ;evaluates each line of the tree
 ;if the state is a number, this means there was a return statement inside an if/while statement
 (define evaluate-line
@@ -25,7 +22,7 @@
       ((boolean? state) 'false)
       ((null? tree) state)
       ((number? state) state)
-      (else (evaluate-line (next-line tree) (cdr tree) (M_state line state))))))
+      (else (evaluate-line (car tree) (cdr tree) (M_state line state))))))
 
 ;name gets the variable name in a declaration/assignment statement
 (define name cadr)
@@ -45,8 +42,11 @@
 ;line-type gets the type of the line, the first element in the line
 (define line-type car)
 
-;next-line gets the next line in the tree
-(define next-line car)
+;next-value gets the next values in a list
+(define next-value cdr)
+
+;curr-value gets the current value in a list
+(define curr-value car)
 
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
 (define Add_M_state
@@ -63,8 +63,8 @@
   (lambda (name declare-list value-list saved-declare saved-value)
     (cond
       ((null? declare-list) (list saved-declare saved-value))
-      ((eq? name (car declare-list)) (list (append saved-declare (cdr declare-list)) (append saved-value (cdr value-list))))
-      (else (remove name (cdr declare-list) (cdr value-list) (cons (car declare-list) saved-declare) (cons (car value-list) saved-value))))))
+      ((eq? name (curr-value declare-list)) (list (append saved-declare (next-value declare-list)) (append saved-value (next-value value-list))))
+      (else (remove name (next-value declare-list) (next-value value-list) (cons (curr-value declare-list) saved-declare) (cons (curr-value value-list) saved-value))))))
 
 
 ;reterns the state of an expression by calling on its respective function, otherwise the current state will be returned
@@ -74,7 +74,7 @@
       ((null? expression) state)
       ((not (list? expression)) state)
       ((list? (line-type expression)) (M_state (cdr expression) (M_state (car expression) state)))
-      ((eq? (line-type expression) 'return) (return (cadr expression) state))
+      ((eq? (line-type expression) 'return) (return-expression (cadr expression) state))
       ((eq? (line-type expression) 'var) (declaration (name expression) expression state))
       ((eq? (line-type expression) '=) (assignment (name expression) (caddr expression) state))
       ((eq? (line-type expression) 'if) (if-statement (cadr expression) (caddr expression) expression state))
