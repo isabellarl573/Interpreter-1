@@ -1,3 +1,4 @@
+#GROUP 16: Abdasalaam Salem, Isabella Robert Llorens, Jamie Booker
 #lang racket
 (require "simpleParser.rkt")
 
@@ -8,11 +9,14 @@
 ;(evaluate-tree '((var x) (= x 10) (var y (+ (* 3 x) 5)) (while (!= (% y x) 3) (= y (+ y 1)))))
 
 ;((var x) (= x 10) (var y (+ (* 3 x) 5)) (while (!= (% y x) 3) (= y (+ y 1))) (if (> x y) (return x) (if (> (* x x) y) (return (* x x)) (if (> (* x (+ x x)) y) (return (* x (+ x x))) (return (- y 1))))))
+
+;takes a filename that contains the code that is to be sent to the parser
 (define interpret
   (lambda (filename)
     (evaluate-tree (parser filename))))
 
 ;a last car is added to the tree in case the last line is a while/if with a return statement inside
+
 ;evaluates the tree by calling evaluate-line
 (define evaluate-tree
   (lambda (tree)
