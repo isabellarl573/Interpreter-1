@@ -73,12 +73,12 @@
     (cond
       ((null? expression) state)
       ((not (list? expression)) state)
-      ((list? (car expression)) (M_state (cdr expression) (M_state (car expression) state)))
-      ((eq? (car expression) 'return) (return (cadr expression) state))
-      ((eq? (car expression) 'var) (declaration (name expression) expression state))
-      ((eq? (car expression) '=) (assignment (name expression) (caddr expression) state))
-      ((eq? (car expression) 'if) (if-statement (cadr expression) (caddr expression) expression state))
-      ((eq? (car expression) 'while) (while-statement (cadr expression) (caddr expression) state))
+      ((list? (line-type expression)) (M_state (cdr expression) (M_state (car expression) state)))
+      ((eq? (line-type expression) 'return) (return (cadr expression) state))
+      ((eq? (line-type expression) 'var) (declaration (name expression) expression state))
+      ((eq? (line-type expression) '=) (assignment (name expression) (caddr expression) state))
+      ((eq? (line-type expression) 'if) (if-statement (cadr expression) (caddr expression) expression state))
+      ((eq? (line-type expression) 'while) (while-statement (cadr expression) (caddr expression) state))
       (else state))))
 
 
