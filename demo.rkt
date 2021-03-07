@@ -26,14 +26,11 @@
 (define evaluate-line
   (lambda (line tree state)
     (cond
-      ;((null? tree) state) ;maybe skips last line, not sure tho
+      ((and (boolean? state) (eq? state #t)) 'true)
+      ((boolean? state) 'false)
+      ((null? tree) state)
       ((number? state) state)
       (else (evaluate-line (next-line tree) (cdr tree) (M_state line state))))))
-      ;((eq? (line-type line) 'var) (evaluate-line (next-line tree) (cdr tree) (declaration (name line) line state)))
-      ;((eq? (line-type line) '=) (evaluate-line (next-line tree) (cdr tree) (assignment (name line) (expression line) state)))
-      ;((eq? (line-type line) 'if) (evaluate-line (next-line tree) (cdr tree) (if-statement (condition line) (then-statement line) line state)))
-      ;((eq? (line-type line) 'while) (evaluate-line (next-line tree) (cdr tree) (while-statement (condition line) (then-statement line) state)))
-      ;((eq? (line-type line) 'return) (return (return-expression line) state)))))
 
 ;gets the variable name in a declaration/assignment statement
 (define name cadr)
@@ -53,11 +50,11 @@
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
 (define Add_M_state
   (lambda (name value state)
-    (list (cons name (car state)) (cons value (car (cdr state))))))
+    (list (cons name (car state)) (cons value (cadr state)))))
 
 (define Remove_M_state
-  (lambda (name declare-list value-list)
-    (remove name declare-list value-list '() '())))
+  (lambda (name state)
+    (remove name (car state) (cadr state) '() '())))
 
 (define remove
   (lambda (name declare-list value-list saved-declare saved-value)
@@ -114,7 +111,7 @@
       ((eq? (operator expression) '*) (* (M_value (leftoperand expression) state) (M_value (rightoperand expression) state)))
       ((eq? (operator expression) 'var) (M_value (leftoperand expression) (M_state expression state)))
       ((eq? (operator expression) '=) (M_value (leftoperand expression) (M_state expression state)))
-      (else (error "Invalid"))))) 
+      (else (M_boolean expression state))))) 
 
 (define operator car)
 (define leftoperand cadr) 
@@ -175,7 +172,7 @@
   (lambda (condition then-statement line state)
     (cond
       ((M_boolean condition (M_state condition state)) (M_state then-statement (M_state condition state)))
-      ((null? (cdddr line)) state)
+      ((null? (cdddr line)) (M_state condition state))
       (else (M_state (cadddr line) (M_state condition state))))))
 
 ;tested?
@@ -183,4 +180,5 @@
   (lambda (condition body-statement state)
     (if (M_boolean condition (M_state condition state))
         (while-statement condition body-statement (M_state body-statement (M_state condition state)))
-        state)))
+        (M_state condition state))))
+
