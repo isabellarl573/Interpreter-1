@@ -139,7 +139,7 @@
 (define assignment
   (lambda (name expression state)
     (if (is_declared name (car state)) ;if has been declared
-        (Add_M_state name (M_value expression state) (M_state expression state))
+        (Add_M_state name (M_value expression state) (Remove_M_state name (M_state expression state)))
         (error "Not Declared"))))
 
 ;tested
