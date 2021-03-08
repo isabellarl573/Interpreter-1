@@ -88,11 +88,6 @@
         (while-statement condition body-statement (M_state body-statement (M_state condition state))) ;if condtion is true, run while statement again on the changed state
         (M_state condition state))))
         
-;gets the condition in a if or while statement
-(define get-condition cadr)
-
-;gets the then statement in a if or while statement
-(define get-then-statement caddr)
 
 ;adds a variable and its value to state, if the value has been declared, but not assigned, its corresponding value is null
 (define Add_M_state
@@ -125,13 +120,19 @@
       ((null? expression) state)
       ((not (list? expression)) state)
       ((list? (line-type expression)) (M_state (cdr expression) (M_state (car expression) state)))
-      ((eq? (line-type expression) 'return) (return-expression (cadr expression) state))
+      ((eq? (line-type expression) 'return) (return (return-expression expression) state))
       ((eq? (line-type expression) 'var) (declaration (get-name expression) expression state))
-      ((eq? (line-type expression) '=) (assignment (get-name expression) (caddr expression) state))
-      ((eq? (line-type expression) 'if) (if-statement (cadr expression) (caddr expression) expression state))
-      ((eq? (line-type expression) 'while) (while-statement (cadr expression) (caddr expression) state))
+      ((eq? (line-type expression) '=) (assignment (get-name expression) (get-expression expression) state))
+      ((eq? (line-type expression) 'if) (if-statement (get-condition expression) (get-expression expression) expression state))
+      ((eq? (line-type expression) 'while) (while-statement (get-condition expression) (get-expression expression) state))
       (else state))))
-      
+
+;gets the condition in a if or while statement
+(define get-condition cadr)
+
+;gets the then statement in a if or while statement
+(define get-then-statement caddr)
+
 ;return-expression gets the return expression in a return statement
 (define return-expression cadr)
 
